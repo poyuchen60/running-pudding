@@ -8,28 +8,29 @@
 .game {
   position: absolute;
   height: 500px;
-  border-top: 1px solid black;
-  border-bottom: 1px solid black;
-  box-sizing: border-box;
+  background-color: rgb(220,220,220);
   width: 100%;
   top: 50%;
   transform: translateY(-50%);
   overflow: hidden;
 }
 
-.character {
+.game-touch {
   position: absolute;
-}
-
-.scene-fragment {
-  position: absolute;
-  width: 3000px;
+  top: 0;
+  left: 0;
+  width: 100%;
   height: 100%;
+  z-index: 1000;
 }
 
-.scene-obstacle {
+.individual {
   position: absolute;
-  background-color: black;
+  border: 1px solid black;
+}
+
+.scene-background {
+  position: absolute;
 }
 
 .hurt {
@@ -38,16 +39,7 @@
   height: 100%;
   width: 100%;
   position: absolute;
-  z-index: 1000;
+  z-index: 100;
   background-color: rgba(255, 0, 0, 0.2);
 }
 
-.jump-button {
-  top:0;
-  left: 0;
-  height: 100%;
-  width: 100%;
-  position: absolute;
-  z-index: 1050;
-  background-color: rgba(255, 0, 0, 0);
-}

@@ -1,12 +1,13 @@
 import { useRef } from 'react';
-import characters from './assets/characters';
 
-function Resource({ store }){
+function Resource({ request }){
   const ref = useRef({});
-  const imgs = Object.entries(characters).map(([name, value]) => <img
-    src={value.src}
+  const { list, commit } = request;
+  
+  const imgs = list.map( ({ name, src })=> <img
+    src={src}
     ref={(ele) => ref.current[name] = ele}
-    onLoad={() => store(name, ref.current[name])} alt={name}
+    onLoad={() => commit(name, ref.current[name])} alt={name}
     key={name}
   />)
 

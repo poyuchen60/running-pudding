@@ -1,52 +1,26 @@
-import { useEffect, useState } from "react";
-import useAnimation from "./useAnimation";
-import { rotate } from "./Action";
+import { useEffect, useRef } from "react";
 
-function Frame({ action, index, monitor }){
-  const { position, frame: { background, obstacles } } = useAnimation(action);
+function Scene({ scene, position, size }){
+  const background = useRef();
   const style = {
-    top: position.y + "px",
-    left: position.x + "px",
-    background: background
+    bottom: 0,
+    left: Math.max(100 - position.x, size.width - scene.length)
   }
-  const objects = obstacles?.map((o, i) => <Obstacle key={i} {...o} />)
-
   useEffect(() => {
-    monitor(`Frame${index}`, { position, obstacles: obstacles.map(o => ({
-      ...o,
-      position: { x: o.position.x + position.x, y: o.position.y + position.y },
-    })) })
-  }, [index, position, obstacles, monitor]);
-  return <div className="scene-fragment" style={style}>
-    {objects}
-  </div>
-}
-
-function Obstacle({ position, width, height }){
-  const style = {
-    top: position.y,
-    left: position.x,
-    width, height
-  }
-  return <div className="scene-obstacle" style={style}></div>
-}
-
-function Scene({ speed, frames, monitor }){
-  const [ actions, setActions ] = useState([]);
-  const [ preSpeed, setPreSpeed ] = useState(undefined);
-  if(preSpeed !== speed){
-    setPreSpeed(speed);
-    setActions([
-      rotate(speed, 3000, 0, frames),
-      rotate(speed, 3000, 1, frames),
-      rotate(speed, 3000, 2, frames)
-    ])
-  }
-
-  const content = actions.map((a, i) => <Frame key={i} action={a} index={i} monitor={monitor} />)
-
+    const { frames, length, obstacles } = scene;
+    const canvas = background.current;
+    const ctx = canvas.getContext('2d');
+    canvas.width = length;
+    canvas.height = 500;
+    frames.forEach((f) => {
+      ctx.drawImage(f.src, f.offset, 0);
+    })
+    obstacles.forEach(({ x, y, width, height }) => {
+      ctx.fillRect(x, 445 - y - height, width, height);
+    })
+  }, [scene]);
   return <div className="scene-container">
-    {content}
+    <canvas ref={background} style={style} className="scene-background"/>
   </div>
 }
 

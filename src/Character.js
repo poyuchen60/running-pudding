@@ -1,30 +1,70 @@
 import { useRef, useEffect } from "react";
-import useAnimation from "./useAnimation";
+import characters from './assets/characters'
+import { useTimer } from './useAnimation';
 
-function Character({ src, action, monitor }) {
-  const { frame, position } = useAnimation(action);
+const aGenerator = (spec) => {
+  let start;
+  let last;
+  const progress = (current) => {
+    if(!current)
+      return undefined;
+    if(!start){
+      start = current;
+      return spec.frames[0];
+    } else{
+      const { frames, interval, notrepeat, offset } = spec;
+      last = (current - start ) / interval + (offset || 0);
+      const number = Math.floor(last)
+      return notrepeat
+        ? frames[ number >= frames.length ? (frames.length - 1) : number]
+        : frames[ number % frames.length]
+    }
+  }
+  return { progress, name: spec.name, get last(){ return last } };
+}
+
+const store = {};
+const actionManager = (data) => {
+  store[data.name] = store[data.name]?.name === data.action
+    ? store[data.name]
+    : aGenerator(characters[data.name].animations[data.action])
+  return { ...data, action: store[data.name] }
+}
+
+function Individual({ data, offset }){
+  const { y, src, action, height, width } = actionManager(data);
+  const { state: frame } = useTimer(action);
   const canvas = useRef(null);
   const style = {
-    top: position.y + "px",
-    left: position.x + "px",
-    zIndex: Math.trunc((position.y || 0) / 50) + 100
+    top: 445 - y - height,
+    left: offset,
+    height, width,
+    zIndex: 100
+  };
+  const adjustment = {
+    position: "absolute",
+    // display: "none",
+    top: -25,
+    left: -3
   }
-
   useEffect(() => {
-    if(src && frame){
+    if(src){
       const cx = canvas.current.getContext("2d");
       const { x, y } = frame;
       cx.clearRect(0, 0, 96, 96);
       cx.drawImage(src, x * 96, y * 96, 96, 96, 0, 0, 96, 96);
     }
   }, [src, frame])
+  return <div className="individual" style={style}>
+    <canvas ref={canvas} height={96} width={96} style={adjustment} />
+  </div>
+}
 
-  useEffect(() => {
-    monitor("character", position);
-  }, [position, monitor])
+function Character({ pudding, goose }) {
 
-  return <div className="character" style={style}>
-    <canvas ref={canvas} width="96" height="96"/>
+  return <div className="character">
+    <Individual data={pudding} offset={100}/>
+    <Individual data={goose} offset={100 + goose.x - pudding.x}/>
   </div>
 }
 
