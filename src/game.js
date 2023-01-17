@@ -44,7 +44,7 @@ Action.accelerating = {
     c.ax = ax || c.ax;
     if(ax === 0)
       throw new Error("must have acceleration");
-    c.vxEnd = vxEnd || c.vxEnd || ( c.ax > 0 ? 2 : 0);
+    c.vxEnd = vxEnd || c.vxEnd || ( c.ax > 0 ? 10 : 0);
     c.x = c.x + c.vx * c.gap + 0.5 * ax * c.gap**2 + c.fixX;
     c.vx += c.ax * c.gap;
     c.gap = 0;
@@ -62,8 +62,8 @@ Action.accelerating = {
       newValue.vx = vxEnd;
       this.fulfill(newValue);
     } else if(x >= c.xMax){
-      const gap = -(-vx - Math.sqrt(vx**2 - 2 * ax * (x - c.xMax))) / ax;
-      console.log("Gap", gap);
+      const gap = -(-vx + Math.sqrt(vx**2 - 2 * ax * (x - c.xMax))) / ax;
+      console.log("Gap", gap, c.xMax);
       newValue.gap = gap;
       newValue.x = c.xMax;
       this.fulfill(newValue);
@@ -207,9 +207,21 @@ const CharacterManager = (init) => {
   const isVulnerable = (name) => characters[name].invulnerable <= 0;
   const moveForwardAndRest = (name, position, cost, resting) => {
     const c = characters[name];
-    optionsBinder(Action.running, { vx: 0.8, xMax: position }).initialize(c);
-    c.next.push(optionsBinder(Action.resting, 800 - 300 / 0.8));
-    // resting > 0 && c.next.push(optionsBinder(Action.resting, resting));
+    if(resting === 0){
+      optionsBinder(Action.running, { vx: 0.8, xMax: position }).initialize(c);
+      c.next.push(optionsBinder(Action.resting, 800 - 300 / 0.8));
+    } else {
+      const ax = 2 * (position - c.x - c.vx * cost) / (cost**2);
+      console.log("2nd:", ax, c.vx);
+      console.log("position:", position);
+      optionsBinder(Action.accelerating, {
+        ax,
+        xMax: position,
+        vx: c.vx,
+        vxEnd: 100,
+      }).initialize(c);
+      c.next.push(optionsBinder(Action.resting, resting));
+    }
     c.next.push(optionsBinder(Action.accelerating, { ax: 600 / (4000**2), vx: 0.8 - 600 / 4000, vxEnd: 0.8 }));
   }
   const hurt = (name, collider) => {

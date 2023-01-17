@@ -19,7 +19,7 @@ const characters = {
       },
       jumping: {
         name: 'jumping',
-        frames: [{ x: 3, y: 5 }],
+        frames: [{ x: 0, y: 8 }],
         interval: 100,
         notrepeat: true
       },
