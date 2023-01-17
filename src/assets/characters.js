@@ -1,14 +1,17 @@
 import Dog from './dog.png';
 import Goose from './shiba.png';
+import Pudding from './pudding.png';
 
 const characters = {
   pudding: {
     name: "pudding",
-    src: Dog,
+    src: Pudding,
+    width: 219,
+    height: 180,
     animations: {
       running: {
         name: 'running',
-        frames: [{ x: 0, y: 8 }, { x: 1, y: 8 }, { x: 2, y: 8 }],
+        frames: [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 2, y: 0 }],
         interval: 90
       },
       sitting: {
@@ -19,13 +22,13 @@ const characters = {
       },
       jumping: {
         name: 'jumping',
-        frames: [{ x: 0, y: 8 }],
+        frames: [{ x: 3, y: 0 }],
         interval: 100,
         notrepeat: true
       },
       falling: {
         name: 'falling',
-        frames: [{ x: 0, y: 8 }],
+        frames: [{ x: 4, y: 0 }],
         interval: 100,
         notrepeat: true
       },
@@ -45,6 +48,8 @@ const characters = {
   goose: {
     name: "goose",
     src: Goose,
+    width: 96,
+    height: 96,
     animations: {
       running: {
         name: 'running',

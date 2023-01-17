@@ -31,8 +31,16 @@ function useGame(){
     }
   }, [game, ready]);
   const data = ready && {
-    pudding: { ...p1, src: ready.pudding, animations: cSettings.pudding.animations },
-    goose: { ...p2, src: ready.goose, animations: cSettings.goose.animations },
+    pudding: { ...p1, src: {
+      img: ready.pudding,
+      width: cSettings.pudding.width,
+      height: cSettings.pudding.height
+    }, animations: cSettings.pudding.animations },
+    goose: { ...p2, src: {
+      img: ready.goose,
+      width: cSettings.goose.width,
+      height: cSettings.goose.height,
+    }, animations: cSettings.goose.animations },
     scene
   };
 

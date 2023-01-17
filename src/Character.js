@@ -51,8 +51,9 @@ function Individual({ data, offset }){
     if(src){
       const cx = canvas.current.getContext("2d");
       const { x, y } = frame;
-      cx.clearRect(0, 0, 96, 96);
-      cx.drawImage(src, x * 96, y * 96, 96, 96, 0, 0, 96, 96);
+      const { img, width, height } = src;
+      cx.clearRect(0, 0, width, height);
+      cx.drawImage(img, x * width, y * height, width, height, 0, 0, 96, 96);
     }
   }, [src, frame])
   return <div className="individual" style={style}>
