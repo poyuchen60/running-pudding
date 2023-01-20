@@ -209,8 +209,8 @@ const CharacterManager = (init) => {
     const c = characters[name];
     const length = position - c.x;
     if(length <= c.vx * cost){
-      optionsBinder(Action.running, { vx: 0.8, xMax: position }).initialize(c);
-      c.next.push(optionsBinder(Action.resting, cost - length / 0.8));
+      optionsBinder(Action.running, { vx: c.powerX, xMax: position }).initialize(c);
+      c.next.push(optionsBinder(Action.resting, cost - length / c.powerX));
     } else {
       const ax = 2 * (position - c.x - c.vx * cost) / (cost**2);
       optionsBinder(Action.accelerating, {
@@ -311,29 +311,32 @@ const generator = (viewport) => {
     { name: 'museumofarts', length: 10000, obstacles: [
       { name: "bush1x1", x: 2000, y: 0, width: 80, height: 80 },
       { name: "tree2x1", x: 3000, y: 0, width: 80, height: 160 },
-      { name: "bigbush", x: 4000, y: 0, width: 150, height: 150 },
+      { name: "bigbush", x: 4000, y: 0, width: 130, height: 130 },
       { name: "rock1x5", x: 5000, y: 65, width: 400, height: 80 },
+      { name: "kasa3x1", x: 6000, y: 0, width: 65, height: 195 },
+      { name: "bush1x3", x: 7000, y: 0, width: 150, height: 50 },
     ] },
     { name: 'museumofarts', length: 10000, obstacles: [
-      { name: "kasa3x1", x: 0, y: 0, width: 70, height: 210 },
+      { name: "bush1x1", x: 0, y: 0, width: 80, height: 80 },
+      { name: "bush1x1", x: 120, y: 0, width: 80, height: 80 },
+      { name: "bush1x1", x: 30, y: 0, width: 110, height: 110 },
       { name: "rock1x1", x: 800, y: 0, width: 80, height: 80 },
       { name: "rock1x2", x: 1600, y: 0, width: 150, height: 75 },
     ] },
     { name: 'museumofarts', length: 10000, obstacles: [
-      { name: "bush1x1", x: 0, y: 0, width: 80, height: 80 },
-      { name: "bush1x1", x: 70, y: 0, width: 80, height: 80 },
+      
       { name: "tree2x1", x: 3000, y: 0, width: 50, height: 100 },
       { name: "bigbush", x: 4000, y: 0, width: 120, height: 120 },
     ] },
   ]);
   const CM = CharacterManager([
     {
-      name: "pudding", x: 100, y: 0, vx: 0.8, vy: 0, ax: 0, ay: 0, action: "running",
-      width:83, height: 62, powerX: 0.8, powerY: 2, vxMax: 0.7
+      name: "pudding", x: 100, y: 0, vx: 0.7, vy: 0, ax: 0, ay: 0, action: "running",
+      width:83, height: 62, powerX: 0.7, powerY: 2, vxMax: 0.7
     },
     {
-      name: "goose", x: viewport.width / 2, y: 0, vx: 0.8, vy: 0, ax: 0, ay: 0, action: "running",
-      width:83, height: 62, powerX: 0.8, powerY: 2, vxMax: 0.7
+      name: "goose", x: viewport.width / 2, y: 0, vx: 0.7, vy: 0, ax: 0, ay: 0, action: "running",
+      width:83, height: 62, powerX: 0.7, powerY: 2, vxMax: 0.7
     }
   ]);
 
@@ -366,8 +369,8 @@ const generator = (viewport) => {
             CM.accelerate(
               "goose",
               viewport.width / (4000**2),
-              0.8 - viewport.width / 4000,
-              0.8,
+              vx - viewport.width / 4000,
+              vx,
               true
             )
           }
