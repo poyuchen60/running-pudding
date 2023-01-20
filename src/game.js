@@ -12,7 +12,7 @@ Action.running = {
   name: "running",
   initialize: function(c, options={}){
     const { xMax, vx } = options;
-    c.xMax = xMax || 25000;
+    c.xMax = xMax || 29800;
     c.vx = vx || c.powerX;
     c.ax = 0;
     c.vxEnd = 0;
@@ -39,7 +39,7 @@ Action.accelerating = {
     console.log("accelerating");
     console.log(c.gap);
     const { ax, xMax, vx, vxEnd } = options;
-    c.xMax = xMax || 25000;
+    c.xMax = xMax || 29800;
     c.vx = vx || c.vx;
     c.ax = ax || c.ax;
     if(ax === 0)
@@ -207,22 +207,27 @@ const CharacterManager = (init) => {
   const isVulnerable = (name) => characters[name].invulnerable <= 0;
   const moveForwardAndRest = (name, position, cost, resting) => {
     const c = characters[name];
-    if(resting === 0){
+    const length = position - c.x;
+    if(length <= c.vx * cost){
       optionsBinder(Action.running, { vx: 0.8, xMax: position }).initialize(c);
-      c.next.push(optionsBinder(Action.resting, 800 - 300 / 0.8));
+      c.next.push(optionsBinder(Action.resting, cost - length / 0.8));
     } else {
       const ax = 2 * (position - c.x - c.vx * cost) / (cost**2);
-      console.log("2nd:", ax, c.vx);
-      console.log("position:", position);
       optionsBinder(Action.accelerating, {
         ax,
         xMax: position,
         vx: c.vx,
         vxEnd: 100,
       }).initialize(c);
-      c.next.push(optionsBinder(Action.resting, resting));
     }
-    c.next.push(optionsBinder(Action.accelerating, { ax: 600 / (4000**2), vx: 0.8 - 600 / 4000, vxEnd: 0.8 }));
+    resting > 0 && c.next.push(optionsBinder(Action.resting, resting));
+  }
+  const accelerate = (name, ax, vx, vxEnd, push) => {
+    const c = characters[name];
+    const action = optionsBinder(Action.accelerating, { ax, vx, vxEnd });
+    push
+      ? c.next.push(action)
+      : action.initialize(c)
   }
   const hurt = (name, collider) => {
     const c = characters[name];
@@ -257,7 +262,10 @@ const CharacterManager = (init) => {
     vx: characters[name].vx
   });
   const getAll = () => Object.values(characters).map(c => c.name);
-  return { update, jump, getPosition, getAll, isVulnerable, hurt, moveForwardAndRest };
+  return {
+    update, jump, getPosition, getAll, isVulnerable, hurt,
+    moveForwardAndRest, accelerate
+  };
 }
 
 const SceneManager = (init) => {
@@ -298,22 +306,24 @@ const SceneManager = (init) => {
   }
 }
 
-const generator = () => {
+const generator = (viewport) => {
   const SM = SceneManager([
-    { name: 'loveriver', length: 10000, obstacles: [
-      { name: "pipe", x: 1000, y: 0, width: 150, height: 50 },
-      { name: "pipe", x: 2000, y: 55, width: 60, height: 120 },
-      { name: "pipe", x: 3000, y: 70, width: 400, height: 80 },
-    ] },
-    { name: 'pier2', length: 10000, obstacles: [
-      { name: "pipe", x: 1000, y: 0, width: 100, height: 100 },
-      { name: "pipe", x: 2000, y: 145, width: 80, height: 120 },
-      { name: "pipe", x: 3000, y: 65, width: 140, height: 50 },
+    { name: 'museumofarts', length: 10000, obstacles: [
+      { name: "bush1x1", x: 2000, y: 0, width: 80, height: 80 },
+      { name: "tree2x1", x: 3000, y: 0, width: 80, height: 160 },
+      { name: "bigbush", x: 4000, y: 0, width: 150, height: 150 },
+      { name: "rock1x5", x: 5000, y: 65, width: 400, height: 80 },
     ] },
     { name: 'museumofarts', length: 10000, obstacles: [
-      { name: "pipe", x: 500, y: 0, width: 100, height: 100 },
-      { name: "pipe", x: 1800, y: 145, width: 80, height: 120 },
-      { name: "pipe", x: 3000, y: 185, width: 120, height: 80 },
+      { name: "kasa3x1", x: 0, y: 0, width: 70, height: 210 },
+      { name: "rock1x1", x: 800, y: 0, width: 80, height: 80 },
+      { name: "rock1x2", x: 1600, y: 0, width: 150, height: 75 },
+    ] },
+    { name: 'museumofarts', length: 10000, obstacles: [
+      { name: "bush1x1", x: 0, y: 0, width: 80, height: 80 },
+      { name: "bush1x1", x: 70, y: 0, width: 80, height: 80 },
+      { name: "tree2x1", x: 3000, y: 0, width: 50, height: 100 },
+      { name: "bigbush", x: 4000, y: 0, width: 120, height: 120 },
     ] },
   ]);
   const CM = CharacterManager([
@@ -322,38 +332,48 @@ const generator = () => {
       width:83, height: 62, powerX: 0.8, powerY: 2, vxMax: 0.7
     },
     {
-      name: "goose", x: 300, y: 0, vx: 0.8, vy: 0, ax: 0, ay: 0, action: "running",
+      name: "goose", x: viewport.width / 2, y: 0, vx: 0.8, vy: 0, ax: 0, ay: 0, action: "running",
       width:83, height: 62, powerX: 0.8, powerY: 2, vxMax: 0.7
     }
   ]);
 
   let start, last;
   let leading = 0;
+  let status = "playing";
   const progress = function(timestamp){
     if(!start){
       start = last = timestamp;
     } else {
       const time = timestamp - last;
       last = timestamp;
-      leading = Math.max(leading - time, 0);
-      console.log("time:", last);
-      CM.update(time);
-      if(CM.isVulnerable("pudding")){
-        const c = CM.getPosition("pudding");
-        const collider = SM.isColliding(c);
-        if(collider){
-          const { x, vx } = c;
-          leading += 4000;
-          console.log("pudding:", x, vx, leading);
-          CM.hurt("pudding", collider);
-          CM.moveForwardAndRest(
-            "goose",
-            x + 500 + (leading - 4000) * vx,
-            800,
-            leading - 4000
-          );
+      if(status === "playing"){
+        leading = Math.max(leading - time, 0);
+        CM.update(time);
+        if(CM.isVulnerable("pudding")){
+          const c = CM.getPosition("pudding");
+          const collider = SM.isColliding(c);
+          if(collider){
+            const { x, vx } = c;
+            leading += 4000;
+            console.log("pudding:", x, vx, leading);
+            CM.hurt("pudding", collider);
+            CM.moveForwardAndRest(
+              "goose",
+              x + viewport.width - 100 + (leading - 4000) * vx,
+              800,
+              leading - 4000
+            );
+            CM.accelerate(
+              "goose",
+              viewport.width / (4000**2),
+              0.8 - viewport.width / 4000,
+              0.8,
+              true
+            )
+          }
         }
       }
+      
     }
     return this;
   }
@@ -363,6 +383,7 @@ const generator = () => {
         CM.jump("pudding");
         break;
       case "pause":
+        status = status === "playing" ? "suspending" : "playing";
         break;
       default:
         throw new Error("invalid command of game");
@@ -373,6 +394,7 @@ const generator = () => {
     progress, command,
     get state(){
       return {
+        status,
         pudding: CM.getPosition("pudding"),
         goose: CM.getPosition("goose")
       }

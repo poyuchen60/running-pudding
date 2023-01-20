@@ -4,15 +4,17 @@ import Character from './Character';
 import Scene from './Scene';
 import useGame from './useGame';
 import { useEffect, useState } from 'react';
+import Menu from './Menu';
 
 function App() {
-  const [ size, setSize ] = useState({ width: window.innerWidth, height: window.innerHeight });
-  const { jump, data, request, pause } = useGame();
+  const [ size, setSize ] = useState({ width: window.innerWidth, height: Math.min(window.innerHeight, 500) });
+  const { jump, data, request, pause, phase, restart } = useGame(size);
   const handleClick = () => {
     console.log("jump");
     jump();
   };
   const handlePause = () => pause();
+  const handleRestart = () => restart();
   const handleTouchEnd = (e) => {
     console.log("touch");
     e.preventDefault();
@@ -22,7 +24,7 @@ function App() {
     const onResize = () => {
       setSize({
         width: window.innerWidth,
-        height: window.innerHeight
+        height: Math.min(window.innerHeight, 500)
       });
     }
     window.addEventListener('resize', onResize);
@@ -32,15 +34,14 @@ function App() {
   return <div className="App">
     {data
       ? <div className='game'>
+        <Menu phase={phase} handlePause={handlePause} handleRestart={handleRestart} />
         <Character pudding={data.pudding} goose={data.goose} />
-        <Scene scene={data.scene} position={data.pudding} size={size} />
+        <Scene scene={data.scene} />
         <div className='game-touch' onTouchStart={handleClick} onTouchEnd={handleTouchEnd} onMouseDown={handleClick}></div>
       </div>
       : "Loading..."
     }
     <Resource request={request} />
-    <button onClick={handleClick}>Jump</button>
-    <button onClick={handlePause}>Pause</button>
   </div>
 }
 

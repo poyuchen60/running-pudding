@@ -31,41 +31,34 @@ const actionManager = (data) => {
   return { ...data, action: store[data.name] }
 }
 
-function Individual({ data, offset }){
-  const { y, src, action, height, width } = actionManager(data);
+function Individual({ data }){
+  const { x, y, src, action, height, width, adjustment, size } = actionManager(data);
   const { state: frame } = useTimer(action);
   const canvas = useRef(null);
   const style = {
-    top: 445 - y - height,
-    left: offset,
+    top: y,
+    left: x,
     height, width,
     zIndex: 100
   };
-  const adjustment = {
-    position: "absolute",
-    // display: "none",
-    top: -25,
-    left: -3
-  }
   useEffect(() => {
     if(src){
       const cx = canvas.current.getContext("2d");
       const { x, y } = frame;
       const { img, width, height } = src;
       cx.clearRect(0, 0, width, height);
-      cx.drawImage(img, x * width, y * height, width, height, 0, 0, 96, 96);
+      cx.drawImage(img, x * width, y * height, width, height, 0, 0, size, size);
     }
-  }, [src, frame])
+  }, [src, frame, size])
   return <div className="individual" style={style}>
-    <canvas ref={canvas} height={96} width={96} style={adjustment} />
+    <canvas ref={canvas} height={110} width={110} style={adjustment} />
   </div>
 }
 
 function Character({ pudding, goose }) {
-
-  return <div className="character">
-    <Individual data={pudding} offset={100}/>
-    <Individual data={goose} offset={100 + goose.x - pudding.x}/>
+  return <div className="character-container">
+    <Individual data={pudding}/>
+    <Individual data={goose}/>
   </div>
 }
 

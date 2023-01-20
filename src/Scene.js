@@ -1,24 +1,22 @@
 import { useEffect, useRef } from "react";
 
-function Scene({ scene, position, size }){
+function Scene({ scene }){
   const background = useRef();
   const style = {
-    bottom: 0,
-    left: Math.max(100 - position.x, size.width - scene.length)
+    left: scene.x
   }
   useEffect(() => {
-    const { frames, length, obstacles } = scene;
     const canvas = background.current;
     const ctx = canvas.getContext('2d');
-    canvas.width = length;
+    canvas.width = scene.length;
     canvas.height = 500;
-    frames.forEach((f) => {
+    scene.frames.forEach((f) => {
       ctx.drawImage(f.src, f.offset, 0);
     })
-    obstacles.forEach(({ x, y, width, height }) => {
-      ctx.fillRect(x, 445 - y - height, width, height);
+    scene.obstacles.forEach(({ x, y, width, height, src }) => {
+      ctx.drawImage(src.img, 0, 0, src.width, src.height, x, y, width, height);
     })
-  }, [scene]);
+  }, [scene.length, scene.frames, scene.obstacles]);
   return <div className="scene-container">
     <canvas ref={background} style={style} className="scene-background"/>
   </div>
