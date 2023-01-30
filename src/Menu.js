@@ -1,4 +1,4 @@
-function Menu({ handleRestart, handlePause, phase }){
+function Menu({ handleRestart, handlePause, phase, handleReturn }){
 
   const content = phase === "suspending"
     ? <div className="menu-fullscreen">
@@ -6,7 +6,7 @@ function Menu({ handleRestart, handlePause, phase }){
       <ul className="menu-normal">
         <li><button onClick={handlePause}>繼續</button></li>
         <li><button onClick={handleRestart}>重來</button></li>
-        <li><button>回主頁</button></li>
+        <li><button onClick={handleReturn}>回主頁</button></li>
       </ul>
     </div>
     : <button className="menu-shrink" onClick={handlePause}>M</button>

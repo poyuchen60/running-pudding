@@ -13,10 +13,11 @@ function useResource(list){
 }
 
 function useGame(viewport){
-  const [ game, setGame ] = useState(() => newGame(viewport));
+  const [ game, setGame ] = useState(() => newGame(viewport, true));
   const [ p1, setP1 ] = useState(game.state.pudding);
   const [ p2, setP2 ] = useState(game.state.goose);
-  const [ phase, setPhase ]= useState(game.state.status);
+  const [ phase, setPhase ] = useState(game.state.status);
+  const [ spend, setSpend ] = useState(0);
 
   const list = useMemo(() => {
     const fList = Object.keys(game.scene.frames.reduce((r, f) => {
@@ -81,22 +82,23 @@ function useGame(viewport){
   };
 
   const jump = useCallback(() => game.command("jump"), [game]);
-  const pause = useCallback(() => game.command("pause"), [game]);
-  const restart = useCallback(() => setGame(newGame(viewport)), [viewport]);
+  const pause = useCallback(() => setPhase(game.command("pause")), [game]);
+  const restart = useCallback((pause) => setGame(newGame(viewport, pause)), [viewport]);
   useEffect(() => {
     let id;
     const step = (timestamp) => {
-      const { pudding, goose, status } = game.progress(timestamp).state;
+      const { pudding, goose, status, grade } = game.progress(timestamp).state;
       setP1(pudding);
       setP2(goose);
       setPhase(status);
+      setSpend(grade);
       id = window.requestAnimationFrame(step);
     }
     id = window.requestAnimationFrame(step);
     return () => window.cancelAnimationFrame(id);
   }, [game])
 
-  return { pause, jump, data, request, restart, phase };
+  return { pause, jump, data, request, restart, phase, spend };
 }
 
 export default useGame;

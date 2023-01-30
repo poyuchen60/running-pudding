@@ -6,6 +6,54 @@
   overflow: hidden;
 }
 
+.main {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: 2000;
+  background-color: antiquewhite;
+  text-align: center;
+}
+
+@keyframes fadein {
+  from {background-color: rgba(0,0,0,0);}
+  to {background-color: antiquewhite;}
+}
+
+.result-container {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: 2000;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  padding: 15px 0;
+  box-sizing: border-box;
+  animation-name: fadein;
+  animation-duration: 3s;
+  animation-fill-mode: forwards;
+}
+
+.result-container .image {
+  flex-grow: 1;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+}
+
+.result-container h1 {
+  margin: 0 0 10px 0;
+}
+
+.result-container p {
+  margin: 0 0 10px 0;
+}
+
+.result-container button {
+  margin: 0 10px 10px;
+}
+
 .game {
   position: absolute;
   height: 100%;
