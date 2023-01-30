@@ -383,9 +383,10 @@ const generator = (viewport, pause) => {
               status = "failed";
             } else {
               CM.clearActionQueue("goose");
+              const des = Math.min(x + viewport.width - 100 + (leading - 4000) * vx, 29800);
               CM.moveForwardAndRest(
                 "goose",
-                x + viewport.width - 100 + (leading - 4000) * vx,
+                des,
                 800,
                 leading - 4000
               );
