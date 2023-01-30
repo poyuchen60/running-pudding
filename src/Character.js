@@ -57,8 +57,8 @@ function Individual({ data }){
 
 function Character({ pudding, goose }) {
   return <div className="character-container">
-    <Individual data={pudding}/>
     <Individual data={goose}/>
+    <Individual data={pudding}/>
   </div>
 }
 

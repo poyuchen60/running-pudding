@@ -367,7 +367,7 @@ const generator = (viewport, pause) => {
       last = timestamp;
       if(status === "playing"){       
         CM.update(time);
-        if(CM.getLeading("pudding", "goose") <= 0){
+        if(CM.getLeading("pudding", "goose") <= -75){
           status = 'succeeded';
           grade = Math.trunc((last - start) / 100) / 10;
         }
