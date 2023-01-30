@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/running-pudding/static/css/main.0d798a05.css",
-    "main.js": "/running-pudding/static/js/main.ce637e39.js",
+    "main.css": "/running-pudding/static/css/main.3c175057.css",
+    "main.js": "/running-pudding/static/js/main.a5af9316.js",
     "static/js/787.d1350894.chunk.js": "/running-pudding/static/js/787.d1350894.chunk.js",
     "static/media/background.png": "/running-pudding/static/media/background.e19a12498debf2fcb708.png",
     "static/media/pudding.png": "/running-pudding/static/media/pudding.cf6abd08ce84649b0b9c.png",
@@ -13,12 +13,12 @@
     "static/media/bush1x3.png": "/running-pudding/static/media/bush1x3.de2aeeefd6a07b0109f9.png",
     "static/media/tree2x1.png": "/running-pudding/static/media/tree2x1.2b5d9a82c91fa49c5f2a.png",
     "index.html": "/running-pudding/index.html",
-    "main.0d798a05.css.map": "/running-pudding/static/css/main.0d798a05.css.map",
-    "main.ce637e39.js.map": "/running-pudding/static/js/main.ce637e39.js.map",
+    "main.3c175057.css.map": "/running-pudding/static/css/main.3c175057.css.map",
+    "main.a5af9316.js.map": "/running-pudding/static/js/main.a5af9316.js.map",
     "787.d1350894.chunk.js.map": "/running-pudding/static/js/787.d1350894.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.0d798a05.css",
-    "static/js/main.ce637e39.js"
+    "static/css/main.3c175057.css",
+    "static/js/main.a5af9316.js"
   ]
 }
